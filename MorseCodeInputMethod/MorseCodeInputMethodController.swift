@@ -11,6 +11,7 @@ import InputMethodKit
 @objc(MorseCodeInputMethodController)
 class MorseCodeInputMethodController: IMKInputController {
     private var currentMorseCode = ""
+    private var currentMorseRange: NSRange?
 
     private var keyDownTimestamp: TimeInterval?
     private var keyUpTimestamp: TimeInterval?
@@ -37,7 +38,7 @@ class MorseCodeInputMethodController: IMKInputController {
     }
     
     override func inputText(_ string: String!, client sender: Any!) -> Bool {
-        return false
+        return true
     }
     
     func setupEventTap() {
@@ -126,7 +127,7 @@ class MorseCodeInputMethodController: IMKInputController {
         }
 
         // Process the Morse code symbol
-        self.currentMorseCode.append(morseSymbol)
+        self.processMorseSymbol(morseSymbol)
         
         // Reset the timestamp
         self.keyUpTimestamp = nil
@@ -137,51 +138,74 @@ class MorseCodeInputMethodController: IMKInputController {
     
     @objc func handleCharTimeout() {
         // Assume the end of a character and process the Morse code
-        self.translateMorseCode()
+        let conversionOk = self.translateMorseCode()
 
-        // Start new timer to process spaces between words
-        self.morseTimer = Timer.scheduledTimer(timeInterval: self.wordThresholdSec * proportionalGain, target: self, selector: #selector(self.handleWordTimeout), userInfo: nil, repeats: false)
+        if (conversionOk) {
+            // Start new timer to process spaces between words
+            self.morseTimer = Timer.scheduledTimer(timeInterval: self.wordThresholdSec * proportionalGain, target: self, selector: #selector(self.handleWordTimeout), userInfo: nil, repeats: false)
+        }
     }
     
     @objc func handleWordTimeout() {
-        guard let inputClient = self.client() else { return }
+        guard let inputClient = self.client() else {
+            NSLog("[handleWordTimeout] inputClient not valid")
+            return
+        }
+        NSLog("Inserting space after word")
         inputClient.insertText(" ", replacementRange: NSRange(location: NSNotFound, length: NSNotFound))
     }
-
-    func translateMorseCode() {
-        // Translate the current Morse code into a character
-        guard let inputClient = self.client() else { return }
-        
     
-        if let character = self.MorseCodeDictionary[self.currentMorseCode] {
-            inputClient.insertText(character, replacementRange: NSRange(location: NSNotFound, length: NSNotFound))
+    func processMorseSymbol(_ symbol: String) {
+        guard let inputClient = self.client() else {
+            NSLog("[processMorseSymbol] inputClient not valid")
+            return
+        }
+
+        // Append the Morse symbol to the current Morse code
+        self.currentMorseCode.append(symbol)
+
+        // Insert Morse symbol as text
+        inputClient.insertText(symbol, replacementRange: NSRange(location: NSNotFound, length: 0))
+        
+        if self.currentMorseRange == nil {
+            self.currentMorseRange = NSRange(location: inputClient.selectedRange().location - 1, length: 1)
         } else {
-            NSLog("Unrecognized Morse code: \(self.currentMorseCode)")
+            self.currentMorseRange?.length += 1
+        }
+    }
+
+    func translateMorseCode() -> Bool {
+        // Translate the current Morse code into a character
+        guard let inputClient = self.client() else {
+            NSLog("[translateMorseCode] inputClient not valid")
+            return false
         }
         
+        let character = MorseCodeDictionary[self.currentMorseCode] ?? ""
+
+        if let range = self.currentMorseRange {
+            inputClient.setMarkedText(character, selectionRange: NSRange(location: NSNotFound, length: 0), replacementRange: range)
+            let insertionPoint = inputClient.selectedRange().location
+            inputClient.setMarkedText("", selectionRange: NSRange(location: insertionPoint, length: 0), replacementRange: NSRange(location: insertionPoint, length: 0))
+        }
+        inputClient.insertText(character, replacementRange: NSRange(location: NSNotFound, length: NSNotFound))
+        
         // Clear the current Morse code after translation
-        self.currentMorseCode.removeAll()
+        self.currentMorseCode = ""
+        self.currentMorseRange = nil
+        
+        if (character == "") {
+            self.morseTimer?.invalidate()
+            return false
+        }
+        
+        return true
     }
-    
-    // Morse code to character dictionary
-    let MorseCodeDictionary: [String: String] = [
-        ".-"    : "A", "-..."  : "B", "-.-."  : "C", "-.."   : "D", "."     : "E",
-        "..-."  : "F", "--."   : "G", "...."  : "H", ".."    : "I", ".---"  : "J",
-        "-.-"   : "K", ".-.."  : "L", "--"    : "M", "-."    : "N", "---"   : "O",
-        ".--."  : "P", "--.-"  : "Q", ".-."   : "R", "..."   : "S", "-"     : "T",
-        "..-"   : "U", "...-"  : "V", ".--"   : "W", "-..-"  : "X", "-.--"  : "Y",
-        "--.."  : "Z", "-----" : "0", ".----" : "1", "..---" : "2", "...--" : "3",
-        "....-" : "4", "....." : "5", "-...." : "6", "--..." : "7", "---.." : "8",
-        "----." : "9", ".-.-.-": ".", "--..--": ",", "..--.." : "?", ".----.": "'",
-        "-.-.--": "!", "-..-." : "/", "-.--." : "(", "-.--.-": ")", ".-..." : "&",
-        "---..." : ":", "-.-.-.": ";", "-...-" : "=", ".-.-." : "+", "-....-": "-",
-        "..--.-": "_", ".-..-.": "\"", "...-..-": "$", ".--.-.": "@"
-    ]
     
     func handleBackspace() {
         if !self.currentMorseCode.isEmpty {
             // Remove the last character from the current Morse code
-            self.currentMorseCode.removeAll()
+            self.currentMorseCode = ""
         }
     }
 }
