@@ -7,7 +7,7 @@
 
 import Foundation
 
-// Morse code to character dictionary
+/// Morse code to character dictionary
 let MorseCodeDictionary: [String: String] = [
     // English alphabet
     ".-"    : "a",

@@ -15,6 +15,6 @@
 		<string>Latn</string>
 	</array>
 	<key>tsInputMethodIconFileKey</key>
-	<string>main.tiff</string>
+	<string>menu-icon.icns</string>
 </dict>
 </plist>
