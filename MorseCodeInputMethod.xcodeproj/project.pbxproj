@@ -13,6 +13,7 @@
 		C10E0F3B2C806E3100E73B36 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C10E0F3A2C806E3100E73B36 /* Info.plist */; };
 		C10E0F3D2C806E4A00E73B36 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10E0F3C2C806E4A00E73B36 /* AppDelegate.swift */; };
 		C10E0F3F2C806E5000E73B36 /* main.tiff in Resources */ = {isa = PBXBuildFile; fileRef = C10E0F3E2C806E5000E73B36 /* main.tiff */; };
+		C124F5DA2C890912007CEAFF /* MorseKeyCodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = C124F5D92C890912007CEAFF /* MorseKeyCodes.swift */; };
 		C1803B2F2C85DA1A00820D71 /* MorseCodeDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1803B2E2C85DA1A00820D71 /* MorseCodeDictionary.swift */; };
 /* End PBXBuildFile section */
 
@@ -25,6 +26,7 @@
 		C10E0F3A2C806E3100E73B36 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C10E0F3C2C806E4A00E73B36 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C10E0F3E2C806E5000E73B36 /* main.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = main.tiff; sourceTree = "<group>"; };
+		C124F5D92C890912007CEAFF /* MorseKeyCodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MorseKeyCodes.swift; sourceTree = "<group>"; };
 		C1803B2E2C85DA1A00820D71 /* MorseCodeDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MorseCodeDictionary.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -62,6 +64,7 @@
 				C10E0F342C806DF300E73B36 /* MorseCodeInputMethod.entitlements */,
 				C10E0F2B2C806DF200E73B36 /* MorseCodeInputMethodController.swift */,
 				C1803B2E2C85DA1A00820D71 /* MorseCodeDictionary.swift */,
+				C124F5D92C890912007CEAFF /* MorseKeyCodes.swift */,
 				C10E0F3C2C806E4A00E73B36 /* AppDelegate.swift */,
 				C10E0F2F2C806DF300E73B36 /* Assets.xcassets */,
 				C10E0F3E2C806E5000E73B36 /* main.tiff */,
@@ -150,6 +153,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C124F5DA2C890912007CEAFF /* MorseKeyCodes.swift in Sources */,
 				C10E0F3D2C806E4A00E73B36 /* AppDelegate.swift in Sources */,
 				C10E0F2C2C806DF200E73B36 /* MorseCodeInputMethodController.swift in Sources */,
 				C1803B2F2C85DA1A00820D71 /* MorseCodeDictionary.swift in Sources */,

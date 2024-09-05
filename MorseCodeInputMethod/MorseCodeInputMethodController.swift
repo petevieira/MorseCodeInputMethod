@@ -19,17 +19,17 @@ class MorseCodeInputMethodController: IMKInputController {
     private let ditThresholdSec = 0.15
     private let charThresholdSec = 0.9
     private let wordThresholdSec = 1.05
-    private let proportionalGain = 0.75
+    private var typingDelay = 0.75
     
     var morseTimer: Timer?
-
+    
     var eventTap: CFMachPort?
     
     override init!(server: IMKServer, delegate: Any!, client inputClient: Any!) {
         super.init(server: server, delegate: delegate, client: inputClient)
         setupEventTap()
     }
-    
+
     deinit {
         if let eventTap = eventTap {
             CGEvent.tapEnable(tap: eventTap, enable: false)
@@ -67,12 +67,18 @@ class MorseCodeInputMethodController: IMKInputController {
     
     static func handleEvent(proxy: CGEventTapProxy, type: CGEventType, event: CGEvent, refcon: UnsafeMutableRawPointer?) -> Unmanaged<CGEvent>? {
         let controller = Unmanaged<MorseCodeInputMethodController>.fromOpaque(refcon!).takeUnretainedValue()
+        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
+
+        NSLog("Got keycode \(keyCode)")
+        if !MorseKeyCodes.contains(keyCode) && keyCode != 51 {
+            NSLog("Skipping keycode \(keyCode)")
+            return Unmanaged.passUnretained(event)
+        }
 
         switch type {
         case .keyDown:
             // Invalidate the existing timer if any
             controller.morseTimer?.invalidate()
-            let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
 
             // Detect if the backspace key is pressed
             if keyCode == 51 {  // 51 is the keyCode for the backspace key
@@ -82,6 +88,9 @@ class MorseCodeInputMethodController: IMKInputController {
             controller.handleKeyDown(event)
             return nil
         case .keyUp:
+            if keyCode == 51 {
+                return nil
+            }
             controller.handleKeyUp(event)
             return nil
         default:
@@ -97,13 +106,6 @@ class MorseCodeInputMethodController: IMKInputController {
     }
     
     func handleKeyUp(_ event: CGEvent) {
-        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        
-        // Ignore keyUp event for backspace
-        if keyCode == 51 {
-            return
-        }
-        
         self.keyUpTimestamp = TimeInterval(event.timestamp)
         var duration: Double = 0.0
         
@@ -120,7 +122,7 @@ class MorseCodeInputMethodController: IMKInputController {
         }
 
         var morseSymbol = ""
-        if (duration < self.ditThresholdSec * proportionalGain) {
+        if (duration < self.ditThresholdSec * typingDelay) {
             morseSymbol = "."
         } else {
             morseSymbol = "-"
@@ -133,7 +135,7 @@ class MorseCodeInputMethodController: IMKInputController {
         self.keyUpTimestamp = nil
         
         // Start a new timer to process the Morse code if no further input is detected within the threshold
-        self.morseTimer = Timer.scheduledTimer(timeInterval: self.charThresholdSec * proportionalGain, target: self, selector: #selector(self.handleCharTimeout), userInfo: nil, repeats: false)
+        self.morseTimer = Timer.scheduledTimer(timeInterval: self.charThresholdSec * typingDelay, target: self, selector: #selector(self.handleCharTimeout), userInfo: nil, repeats: false)
     }
     
     @objc func handleCharTimeout() {
@@ -142,7 +144,7 @@ class MorseCodeInputMethodController: IMKInputController {
 
         if (conversionOk) {
             // Start new timer to process spaces between words
-            self.morseTimer = Timer.scheduledTimer(timeInterval: self.wordThresholdSec * proportionalGain, target: self, selector: #selector(self.handleWordTimeout), userInfo: nil, repeats: false)
+            self.morseTimer = Timer.scheduledTimer(timeInterval: self.wordThresholdSec * typingDelay, target: self, selector: #selector(self.handleWordTimeout), userInfo: nil, repeats: false)
         }
     }
     
