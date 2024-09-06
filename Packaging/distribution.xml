@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="2">
+    <title>Morse Code Input Method Installer</title>
+
+    <!-- Background image (in ./resources/) -->
+    <background file="background.png" alignment="center" scaling="tofit" mime-type="image/png"/>
+
+    <!-- Welcome, license, and conclusion pages (in ./resources/)-->
+    <welcome file="welcome.html"/>
+    <license file="license.html"/>
+    <conclusion file="conclusion.html"/>
+
+    <!-- Installation options -->
+    <options customize="never" require-scripts="false" hostArchitectures="x86_64,arm64"/>
+
+    <!-- Only allow installation in the user home directory -->
+    <!-- <domains enable_anywhere="false" enable_currentUserHome="true"/> -->
+
+    <!-- Package selection (no customization, only on option)-->
+    <choices-outline>
+        <line choice="default">
+            <line choice="MorseCodeInputMethod"/>
+        </line>
+    </choices-outline>
+
+    <!-- Define the Morse Code Input Method choice -->
+    <choice id="MorseCodeInputMethod" title="Morse Code Input Method">
+        <pkg-ref id="com.rapierevite.inputmethod.MorseCodeInputMethod"/>
+    </choice>
+
+    <!-- Reference the actual package file -->
+    <pkg-ref id="com.rapierevite.inputmethod.MorseCodeInputMethod" version="1.0">MorseCodeComponent.pkg</pkg-ref>
+</installer-gui-script>

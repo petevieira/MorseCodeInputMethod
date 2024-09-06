@@ -28,6 +28,7 @@
 		C10E0F3C2C806E4A00E73B36 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C124F5D92C890912007CEAFF /* MorseKeyCodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MorseKeyCodes.swift; sourceTree = "<group>"; };
 		C1803B2E2C85DA1A00820D71 /* MorseCodeDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MorseCodeDictionary.swift; sourceTree = "<group>"; };
+		C1AF81552C89FA000080C388 /* uninstall.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = uninstall.sh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,6 +45,7 @@
 		C10E0F1F2C806DF200E73B36 = {
 			isa = PBXGroup;
 			children = (
+				C1AF81542C89F9E90080C388 /* Packaging */,
 				C10E0F2A2C806DF200E73B36 /* MorseCodeInputMethod */,
 				C10E0F292C806DF200E73B36 /* Products */,
 			);
@@ -79,6 +81,14 @@
 				C10E0F322C806DF300E73B36 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		C1AF81542C89F9E90080C388 /* Packaging */ = {
+			isa = PBXGroup;
+			children = (
+				C1AF81552C89FA000080C388 /* uninstall.sh */,
+			);
+			path = Packaging;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

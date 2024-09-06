@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Create the Input Methods directory if it doesn't exist
+if [ ! -d ~/Library/Input\ Methods/ ]; then
+    mkdir -p ~/Library/Input\ Methods/
+fi
+
+# Copy the app if it exists in the staging area
+if [ -d "$3/Library/Input Methods/Morse Code.app" ]; then
+    cp -r "$3/Library/Input Methods/Morse Code.app" ~/Library/Input\ Methods/
+fi
+
+# Copy the swiftmodule if it exists in the staging area
+if [ -d "$3/Library/Input Methods/Morse_Code.swiftmodule" ]; then
+    cp -r "$3/Library/Input Methods/Morse_Code.swiftmodule" ~/Library/Input\ Methods/
+fi
+
+exit 0
