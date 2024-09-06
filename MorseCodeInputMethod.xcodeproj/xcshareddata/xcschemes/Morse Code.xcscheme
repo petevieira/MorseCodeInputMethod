@@ -15,24 +15,24 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "C10E0F272C806DF200E73B36"
-               BuildableName = "Morse Code.app"
-               BlueprintName = "Morse Code"
+               BuildableName = "MorseCodeInputMethod.app"
+               BlueprintName = "MorseCodeInputMethod"
                ReferencedContainer = "container:MorseCodeInputMethod.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
-      buildConfiguration = "Debug"
+      buildConfiguration = "Release"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
       shouldAutocreateTestPlan = "YES">
    </TestAction>
    <LaunchAction
-      buildConfiguration = "Debug"
-      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
-      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      buildConfiguration = "Release"
+      selectedDebuggerIdentifier = ""
+      selectedLauncherIdentifier = "Xcode.IDEFoundation.Launcher.PosixSpawn"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
@@ -44,8 +44,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "C10E0F272C806DF200E73B36"
-            BuildableName = "Morse Code.app"
-            BlueprintName = "Morse Code"
+            BuildableName = "MorseCodeInputMethod.app"
+            BlueprintName = "MorseCodeInputMethod"
             ReferencedContainer = "container:MorseCodeInputMethod.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -61,8 +61,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "C10E0F272C806DF200E73B36"
-            BuildableName = "Morse Code.app"
-            BlueprintName = "Morse Code"
+            BuildableName = "MorseCodeInputMethod.app"
+            BlueprintName = "MorseCodeInputMethod"
             ReferencedContainer = "container:MorseCodeInputMethod.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
