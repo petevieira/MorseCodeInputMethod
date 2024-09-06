@@ -41,7 +41,7 @@ This input method provides the ability to use any non-modifier key to type Morse
 pkgbuild --install-location ~/Library/Input\ Methods/ --identifier com.mycompany.inputmethod.MorseCodeInputMethod --version 1.0 --root morse-code-install-files/ MorseCodeComponent.pkg
 ```
 
-2. Create a **distribution.xml** file, specifying the pkg name from step 1
+2. Create a **distribution.xml** file, specifying the pkg name from step 1. For more info on the **distribution.xml** file syntax, see Apple's [Distribution XML Reference](https://developer.apple.com/library/archive/documentation/DeveloperTools/Reference/DistributionDefinitionRef/Chapters/Distribution_XML_Ref.html#//apple_ref/doc/uid/TP40005370-CH100-SW20)
 ```bash
 productbuild --synthesize --package MorseCodeComponent.pkg distribution.xml
 ```
@@ -53,7 +53,7 @@ productbuild --synthesize --package MorseCodeComponent.pkg distribution.xml
 productbuild --distribution distribution.xml --resources resources --package-path . MorseCodeInputMethodInstaller.pkg
 ```
 
-1. Create an uninstaller package.
+5. Create an uninstaller package.
 ```bash
 mkdir /tmp/emptydir
 pkgbuild --nopayload --scripts uninstall-scripts --identifier com.mycompany.inputmethod.MorseCodeInputMethod --version 1.0 MorseCodeInputMethodUninstaller.pkg
