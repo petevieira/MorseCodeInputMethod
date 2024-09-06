@@ -13,6 +13,7 @@
 		C10E0F332C806DF300E73B36 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C10E0F322C806DF300E73B36 /* Preview Assets.xcassets */; };
 		C10E0F3D2C806E4A00E73B36 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10E0F3C2C806E4A00E73B36 /* AppDelegate.swift */; };
 		C124F5DA2C890912007CEAFF /* MorseKeyCodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = C124F5D92C890912007CEAFF /* MorseKeyCodes.swift */; };
+		C132394F2C8B27C500ABCAA2 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C10E0F3A2C806E3100E73B36 /* Info.plist */; };
 		C1803B2F2C85DA1A00820D71 /* MorseCodeDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1803B2E2C85DA1A00820D71 /* MorseCodeDictionary.swift */; };
 /* End PBXBuildFile section */
 
@@ -140,6 +141,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C132394F2C8B27C500ABCAA2 /* Info.plist in Resources */,
 				C100E5D22C89D47300459293 /* menu-icon.icns in Resources */,
 				C10E0F332C806DF300E73B36 /* Preview Assets.xcassets in Resources */,
 				C10E0F302C806DF300E73B36 /* Assets.xcassets in Resources */,
@@ -297,6 +299,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = MorseCodeInputMethod/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Morse Code Input Method";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -329,6 +332,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = MorseCodeInputMethod/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Morse Code Input Method";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

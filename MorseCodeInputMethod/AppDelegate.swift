@@ -9,6 +9,7 @@ import Cocoa
 import InputMethodKit
 
 // Necessary to launch this app
+@objc(NSManualApplication)
 class NSManualApplication: NSApplication {
     private let appDelegate = AppDelegate()
 
