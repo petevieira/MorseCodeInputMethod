@@ -33,3 +33,28 @@ This input method provides the ability to use any non-modifier key to type Morse
 | -..-       | X      |            |        |            |             |
 | -.--       | Y      |            |        |            |             |
 | --..       | Z      |            |        |            |             |
+
+## Packaging
+
+1. Create the component package file that handles the installation. This file is sufficient to install the input method.
+```bash
+pkgbuild --install-location ~/Library/Input\ Methods/ --identifier com.mycompany.inputmethod.MorseCodeInputMethod --version 1.0 --root morse-code-install-files/ MorseCodeComponent.pkg
+```
+
+2. Create a **distribution.xml** file, specifying the pkg name from step 1
+```bash
+productbuild --synthesize --package MorseCodeComponent.pkg distribution.xml
+```
+
+3. Modify the **distribution.xml** file appropriately.
+
+4. Create the distribution package, where **resources/** contains the .html files and background.png image that **distribution.xml** references.
+```bash
+productbuild --distribution distribution.xml --resources resources --package-path . MorseCodeInputMethodInstaller.pkg
+```
+
+1. Create an uninstaller package.
+```bash
+mkdir /tmp/emptydir
+pkgbuild --nopayload --scripts uninstall-scripts --identifier com.mycompany.inputmethod.MorseCodeInputMethod --version 1.0 MorseCodeInputMethodUninstaller.pkg
+```
