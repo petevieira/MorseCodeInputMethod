@@ -13,9 +13,6 @@
     <!-- Installation options -->
     <options customize="never" require-scripts="false" hostArchitectures="x86_64,arm64"/>
 
-    <!-- Only allow installation in the user home directory -->
-    <domains enable_anywhere="false" enable_currentUserHome="true"/> 
-
     <!-- Package selection (no customization, only on option)-->
     <choices-outline>
         <line choice="default">

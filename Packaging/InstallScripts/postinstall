@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Log to file
+echo "Postinstall script for MorseCodeInputMethod started" >> /var/log/install.log
+
+# Get the current logged-in user
+USER=$(stat -f "%Su" /dev/console)
+USER_HOME=$(dscl . -read /Users/$USER NFSHomeDirectory | awk '{print $2}')
+
+# Change ownership of installed files to the logged-in user
+chown -R "$USER:staff" "$USER_HOME/Library/Input Methods/MorseCodeInputMethod.app"
+chown -R "$USER:staff" "$USER_HOME/Library/Input Methods/MorseCodeInputMethod.swiftmodule"
+
+# Log success
+echo "MorseCodeInputMethod files ownership change completed successfully" >> /var/log/install.log
+
+exit 0

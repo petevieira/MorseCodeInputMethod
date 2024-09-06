@@ -82,7 +82,7 @@ productbuild --synthesize --package MorseCodeComponent.pkg distribution.xml
 
 4. Create the distribution package, where **resources/** contains the .html files and background.png image that **distribution.xml** references.
 ```bash
-productbuild --distribution distribution.xml --resources resources --package-path . MorseCodeInputMethodInstaller.pkg
+productbuild --distribution distribution.xml --resources Resources/ --package-path . MorseCodeInputMethodInstaller.pkg
 ```
 
 5. Create an uninstaller package.
