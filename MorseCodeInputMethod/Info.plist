@@ -19,8 +19,10 @@
 	<key>tsInputMethodIconFileKey</key>
 	<string>menu-icon.icns</string>
 	<key>CFBundleDisplayName</key>
-	<string>Morse Code</string>
+	<string>MorseCodeInput</string>
 	<key>CFBundleName</key>
 	<string>Morse Code</string>
+	<key>BundleIsRelocatable</key>
+	<false/>
 </dict>
 </plist>
