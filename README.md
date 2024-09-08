@@ -79,7 +79,7 @@ This input method provides the ability to use any non-modifier key to type Morse
 
 These steps are for if you want to create an installation package from scratch. For the installer package itself, go to the Releases tab.
 
-1. Build the software and place the build products ("Morse Code.app", "Morse_Code.swiftmodule") into a folder to be used during installation package creation.
+1. Build the software and place the build products ("Morse Code.app", "Morse_Code.swiftmodule") into a folder to be used during installation package creation, or just use the folder where Xcode builds them.
 ```bash
 cp -r ./build/Release/MorseCodeInputMethod.{app,swiftmodule} Packaging/install-files/
 ```
@@ -89,7 +89,7 @@ cp -r ./build/Release/MorseCodeInputMethod.{app,swiftmodule} Packaging/install-f
 cd Packaging
 ```
 ```bash
-pkgbuild --install-location ~/Library/Input\ Methods/ --identifier com.rapierevite.inputmethod.MorseCodeInputMethod --version 1.0 --root install-files/ --scripts InstallScripts/ MorseCodeComponent.pkg
+pkgbuild --install-location ~/Library/Input\ Methods/ --identifier com.rapierevite.inputmethod.MorseCodeInputMethod --version 1.0 --root <install-files/> --scripts InstallScripts/ MorseCodeComponent.pkg
 ```
 
 3. Create a **distribution.xml** file (NOTE: this file already exists in the repo), specifying the pkg name from step 1. For more info on the **distribution.xml** file syntax, see Apple's [Distribution XML Reference](https://developer.apple.com/library/archive/documentation/DeveloperTools/Reference/DistributionDefinitionRef/Chapters/Distribution_XML_Ref.html#//apple_ref/doc/uid/TP40005370-CH100-SW20)
