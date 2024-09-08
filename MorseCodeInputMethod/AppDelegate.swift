@@ -14,7 +14,7 @@ class NSManualApplication: NSApplication {
     private let appDelegate = AppDelegate()
 
     override init() {
-        NSLog("Launching Morse Code Input");
+        NSLog("Launching Morse Code Input Method");
         super.init()
         self.delegate = appDelegate
     }
