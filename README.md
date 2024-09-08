@@ -67,7 +67,7 @@ This input method provides the ability to use any non-modifier key to type Morse
 1. Open the project in Xcode
 2. Build the target
 3. Navigate to the build folder (**Product** -> **Show Build Folder in Finder**)
-4. Copy the `.app` and `.swiftmodule` to ~/Library/Input\ Methods/k
+4. Copy the `.app` and `.swiftmodule` to ~/Library/Input\ Methods/
 5. Log out
 6. Log back in
 7. Add the input method
