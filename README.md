@@ -58,9 +58,28 @@ This input method provides the ability to use any non-modifier key to type Morse
 | LICENSE | Licensing information for this software. |
 | README.md | This documentation file, used to learn more about the software. |
 
+## Installation
+
+1. Go to 
+
+## Manual Buidling & Installation
+
+1. Open the project in Xcode
+2. Build the target
+3. Navigate to the build folder (**Product** -> **Show Build Folder in Finder**)
+4. Copy the `.app` and `.swiftmodule` to ~/Library/Input\ Methods/k
+5. Log out
+6. Log back in
+7. Add the input method
+   - Go to **System Preferences** -> **Keyboard**,
+   - under **Text Input** -> **Input Sources** click the **Edit** button.
+   - In the bottom left of the window that pops up, click the **+** button and add Morse Code input method.
+
 ## Packaging
 
-0. Build the software and place the build products ("Morse Code.app", "Morse_Code.swiftmodule") into a folder to be used during installation package creation.
+These steps are for if you want to create an installation package from scratch. For the installer package itself, go to the Releases tab.
+
+1. Build the software and place the build products ("Morse Code.app", "Morse_Code.swiftmodule") into a folder to be used during installation package creation.
 ```bash
 cp -r ./build/Release/MorseCodeInputMethod.{app,swiftmodule} Packaging/install-files/
 ```
@@ -73,19 +92,19 @@ cd Packaging
 pkgbuild --install-location ~/Library/Input\ Methods/ --identifier com.rapierevite.inputmethod.MorseCodeInputMethod --version 1.0 --root install-files/ --scripts InstallScripts/ MorseCodeComponent.pkg
 ```
 
-2. Create a **distribution.xml** file, specifying the pkg name from step 1. For more info on the **distribution.xml** file syntax, see Apple's [Distribution XML Reference](https://developer.apple.com/library/archive/documentation/DeveloperTools/Reference/DistributionDefinitionRef/Chapters/Distribution_XML_Ref.html#//apple_ref/doc/uid/TP40005370-CH100-SW20)
+3. Create a **distribution.xml** file (NOTE: this file already exists in the repo), specifying the pkg name from step 1. For more info on the **distribution.xml** file syntax, see Apple's [Distribution XML Reference](https://developer.apple.com/library/archive/documentation/DeveloperTools/Reference/DistributionDefinitionRef/Chapters/Distribution_XML_Ref.html#//apple_ref/doc/uid/TP40005370-CH100-SW20)
 ```bash
 productbuild --synthesize --package MorseCodeComponent.pkg distribution.xml
 ```
 
-3. Modify the **distribution.xml** file appropriately.
+4. Modify the **distribution.xml** file appropriately.
 
-4. Create the distribution package, where **resources/** contains the .html files and background.png image that **distribution.xml** references.
+5. Create the distribution package, where **resources/** contains the .html files and background.png image that **distribution.xml** references.
 ```bash
 productbuild --distribution distribution.xml --resources Resources/ --package-path . MorseCodeInputMethodInstaller.pkg
 ```
 
-5. Create an uninstaller package.
+6. Create an uninstaller package.
 ```bash
 pkgbuild --nopayload --scripts UninstallScripts --identifier com.rapierevite.inputmethod.MorseCodeInputMethod --version 1.0 MorseCodeInputMethodUninstaller.pkg
 ```
