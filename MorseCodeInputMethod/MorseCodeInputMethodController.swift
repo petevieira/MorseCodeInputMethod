@@ -25,8 +25,22 @@ class MorseCodeInputMethodController: IMKInputController {
     private let charThresholdSec = 0.9
     /// Length of pause in typing that indicates the end of typing a word.
     private let wordThresholdSec = 1.05
+    /// Nominal delay that the user preferences gets multiplied by
+    private let nominalDelay: Double = 0.75
+    /// Default normalizing typing delay so that 0.75 is the middle of the slider range, ie. when typingDelay is 5.
+    private let typingDelayNormalizer = 5.0
     /// Delay factor before conversion from Morse symbols to valid characters occurs. The smaller the faster one must type.
-    private var typingDelay = 0.75
+    private var typingDelay: Double {
+        get {
+            return UserDefaults.standard.double(forKey: "typingDelay") != 0 ?
+            UserDefaults.standard.double(forKey: "typingDelay") : 5.0
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: "typingDelay")
+        }
+    }
+    
+    var preferencesWindowController: PreferencesWindowController?
     
     /// Backspace event key code, since it's handled exceptionally.
     private static let backspace: Int64 = 51
@@ -42,12 +56,27 @@ class MorseCodeInputMethodController: IMKInputController {
     override init!(server: IMKServer, delegate: Any!, client inputClient: Any!) {
         super.init(server: server, delegate: delegate, client: inputClient)
         setupEventTap()
+        NotificationCenter.default.addObserver(self, selector: #selector(updateSettings), name: UserDefaults.didChangeNotification, object: nil)
     }
 
     deinit {
         self.removeEventTap()
     }
     
+    override func menu() -> NSMenu! {
+        let menu = NSMenu()
+        
+        let preferencesMenuItem = NSMenuItem(
+            title: "Typing Speed \(self.typingDelay)...",
+            action: #selector(openPreferencesWindow),
+            keyEquivalent: ""
+        )
+        preferencesMenuItem.target = self
+        menu.addItem(preferencesMenuItem)
+        
+        return menu
+    }
+
     func removeEventTap() {
         if let eventTap = eventTap {
             CGEvent.tapEnable(tap: eventTap, enable: false)
@@ -180,7 +209,7 @@ class MorseCodeInputMethodController: IMKInputController {
         }
 
         var morseSymbol = "-"
-        if (duration < self.ditThresholdSec * typingDelay) {
+        if (duration < self.ditThresholdSec * self.getTypingDelay()) {
             morseSymbol = "."
         }
 
@@ -191,7 +220,11 @@ class MorseCodeInputMethodController: IMKInputController {
         self.keyUpTimestamp = nil
         
         // Start a new timer to process the Morse code if no further input is detected within the threshold
-        self.morseTimer = Timer.scheduledTimer(timeInterval: self.charThresholdSec * typingDelay, target: self, selector: #selector(self.handleCharTimeout), userInfo: nil, repeats: false)
+        self.morseTimer = Timer.scheduledTimer(timeInterval: self.charThresholdSec * self.getTypingDelay(), target: self, selector: #selector(self.handleCharTimeout), userInfo: nil, repeats: false)
+    }
+    
+    func getTypingDelay() -> Double {
+        return self.typingDelay * self.nominalDelay / self.typingDelayNormalizer
     }
     
     /**
@@ -205,7 +238,7 @@ class MorseCodeInputMethodController: IMKInputController {
 
         if (conversionOk) {
             // Start new timer to process spaces between words
-            self.morseTimer = Timer.scheduledTimer(timeInterval: self.wordThresholdSec * typingDelay, target: self, selector: #selector(self.handleWordTimeout), userInfo: nil, repeats: false)
+            self.morseTimer = Timer.scheduledTimer(timeInterval: self.wordThresholdSec * self.getTypingDelay(), target: self, selector: #selector(self.handleWordTimeout), userInfo: nil, repeats: false)
         }
     }
     
@@ -286,5 +319,17 @@ class MorseCodeInputMethodController: IMKInputController {
     func handleBackspace() {
         self.currentMorseCode = ""
         self.morseTimer?.invalidate()
+    }
+    
+    @objc func openPreferencesWindow() {
+        if preferencesWindowController == nil {
+            preferencesWindowController = PreferencesWindowController(windowNibName: "PreferencesWindow")
+        }
+        preferencesWindowController?.showWindow(self)
+    }
+    
+    @objc func updateSettings() {
+        self.typingDelay = UserDefaults.standard.double(forKey: "typingDelay")
+        NSLog("[Morse Code Input Method] Updated typingDelay to \(self.typingDelay)")
     }
 }

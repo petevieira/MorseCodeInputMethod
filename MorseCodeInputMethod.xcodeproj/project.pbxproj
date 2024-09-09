@@ -14,6 +14,8 @@
 		C10E0F3D2C806E4A00E73B36 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10E0F3C2C806E4A00E73B36 /* AppDelegate.swift */; };
 		C124F5DA2C890912007CEAFF /* MorseKeyCodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = C124F5D92C890912007CEAFF /* MorseKeyCodes.swift */; };
 		C1803B2F2C85DA1A00820D71 /* MorseCodeDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1803B2E2C85DA1A00820D71 /* MorseCodeDictionary.swift */; };
+		C1B8C3462C8EEB51003DE068 /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1B8C3452C8EEB51003DE068 /* PreferencesWindowController.swift */; };
+		C1B8C34C2C8EF540003DE068 /* PreferencesWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = C1B8C34B2C8EF540003DE068 /* PreferencesWindow.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +30,8 @@
 		C124F5D92C890912007CEAFF /* MorseKeyCodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MorseKeyCodes.swift; sourceTree = "<group>"; };
 		C16F0CF12C8AFAE0009A4730 /* Packaging */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Packaging; sourceTree = "<group>"; };
 		C1803B2E2C85DA1A00820D71 /* MorseCodeDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MorseCodeDictionary.swift; sourceTree = "<group>"; };
+		C1B8C3452C8EEB51003DE068 /* PreferencesWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindowController.swift; sourceTree = "<group>"; };
+		C1B8C34B2C8EF540003DE068 /* PreferencesWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PreferencesWindow.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +74,8 @@
 				C100E5D12C89D47300459293 /* menu-icon.icns */,
 				C10E0F2F2C806DF300E73B36 /* Assets.xcassets */,
 				C10E0F312C806DF300E73B36 /* Preview Content */,
+				C1B8C3452C8EEB51003DE068 /* PreferencesWindowController.swift */,
+				C1B8C34B2C8EF540003DE068 /* PreferencesWindow.xib */,
 			);
 			path = MorseCodeInputMethod;
 			sourceTree = "<group>";
@@ -140,6 +146,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C1B8C34C2C8EF540003DE068 /* PreferencesWindow.xib in Resources */,
 				C100E5D22C89D47300459293 /* menu-icon.icns in Resources */,
 				C10E0F332C806DF300E73B36 /* Preview Assets.xcassets in Resources */,
 				C10E0F302C806DF300E73B36 /* Assets.xcassets in Resources */,
@@ -155,6 +162,7 @@
 			files = (
 				C124F5DA2C890912007CEAFF /* MorseKeyCodes.swift in Sources */,
 				C10E0F3D2C806E4A00E73B36 /* AppDelegate.swift in Sources */,
+				C1B8C3462C8EEB51003DE068 /* PreferencesWindowController.swift in Sources */,
 				C10E0F2C2C806DF200E73B36 /* MorseCodeInputMethodController.swift in Sources */,
 				C1803B2F2C85DA1A00820D71 /* MorseCodeDictionary.swift in Sources */,
 			);
