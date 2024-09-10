@@ -15,7 +15,8 @@ class MorseCodeInputMethodController: IMKInputController {
     private var currentMorseCode = ""
     /// Current input range the the Morse symbols are taking up.
     private var currentMorseRange: NSRange?
-    
+
+    /// Whether or not a speed setting key is being processed. Needed to avoid false conversions.
     private var isSpeedSettingKey: Bool = false
 
     /// Timestamp for when the last keyDown occured.
@@ -30,20 +31,15 @@ class MorseCodeInputMethodController: IMKInputController {
     private let wordThresholdSec = [0, 1.027, 0.948, 0.869, 0.79, 0.711, 0.632, 0.553, 0.474, 0.395]
     /// Delay factor before conversion from Morse symbols to valid characters occurs. The smaller the faster one must type.
     private var typingSpeed = 5
-    
-    /// Manages the audio graph for produces Morse beeps
-    var audioEngine: AVAudioEngine!
-    /// Plays a custom-generated sine wave by filling an AVAudioPCMBuffer with sound data for a given frequency
-    var audioPlayerNode: AVAudioPlayerNode!
-    
+
     /// Backspace event key code, since it's handled exceptionally.
     private static let backspace: Int64 = 51
-    
+
     /// Timer for determining when to convert Morse symbols to valid characters, and when to insert a space at the end of a word or sentence.
     var morseTimer: Timer?
-    
+
     var eventTap: CFMachPort?
-    
+
     /**
      * Constructor.
      */
@@ -55,7 +51,10 @@ class MorseCodeInputMethodController: IMKInputController {
     deinit {
         self.removeEventTap()
     }
-    
+
+    /**
+     * Remove event tap capturing, when input method deactivated.
+     */
     func removeEventTap() {
         if let eventTap = eventTap {
             CGEvent.tapEnable(tap: eventTap, enable: false)
@@ -66,29 +65,33 @@ class MorseCodeInputMethodController: IMKInputController {
         }
         NSLog("Event tap successfully removed.")
     }
-    
+
     override func activateServer(_ sender: Any!) {
         super.activateServer(sender)
         NSLog("Morse code input method activated.")
     }
-    
+
+    /**
+     * Create the menu in the layout switch menu in the mac menu bar.
+     * - Returns: Final menu
+     */
     override func menu() -> NSMenu! {
         let menu = NSMenu()
-        
+
         let infoMenuItem = NSMenuItem()
         infoMenuItem.title = "- Use number keys (1-9) to adjust typing speed."
         infoMenuItem.isEnabled = false
-        
+
         let substitutionsMenuItem = NSMenuItem()
         substitutionsMenuItem.title = "- Turn off text substitutions to avoid issues."
         substitutionsMenuItem.isEnabled = false
 
         menu.addItem(infoMenuItem)
         menu.addItem(substitutionsMenuItem)
-        
+
         return menu
     }
-    
+
     override func deactivateServer(_ sender: Any!) {
         super.deactivateServer(sender)
         removeEventTap() // Ensure event tap is removed on deactivation
@@ -105,14 +108,14 @@ class MorseCodeInputMethodController: IMKInputController {
     override func inputText(_ string: String!, client sender: Any!) -> Bool {
         return true
     }
-    
+
     /**
      * Sets up global event handler, specifying to only handle keyDown and keyUp events.
      * - Returns: void
      */
     func setupEventTap() {
         let eventMask = (1 << CGEventType.keyDown.rawValue) | (1 << CGEventType.keyUp.rawValue)
-        
+
         eventTap = CGEvent.tapCreate(
             tap: .cghidEventTap,  // Event tap location
             place: .headInsertEventTap,  // Insert at the head of the event stream
@@ -124,7 +127,7 @@ class MorseCodeInputMethodController: IMKInputController {
                 return MorseCodeInputMethodController.handleEvent(proxy: proxy, type: type, event: event, refcon: refcon)
             },
             userInfo: UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque()))
-        
+
         if let eventTap = eventTap {
             let runLoopSource = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, eventTap, 0)
             CFRunLoopAddSource(CFRunLoopGetCurrent(), runLoopSource, .commonModes)
@@ -133,7 +136,7 @@ class MorseCodeInputMethodController: IMKInputController {
             NSLog("Failed to create event tap")
         }
     }
-    
+
     /**
      * Handles tap events.
      * - Parameters:
@@ -146,14 +149,14 @@ class MorseCodeInputMethodController: IMKInputController {
     static func handleEvent(proxy: CGEventTapProxy, type: CGEventType, event: CGEvent, refcon: UnsafeMutableRawPointer?) -> Unmanaged<CGEvent>? {
         let controller = Unmanaged<MorseCodeInputMethodController>.fromOpaque(refcon!).takeUnretainedValue()
         let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        
+
         // If not a valid key code, or if it's bac
         if (!MorseLetterKeyCodes.contains(keyCode) && !MorseNumberKeyCodes.contains(keyCode))
             || (keyCode == self.backspace && type != .keyDown)
         {
             return Unmanaged.passUnretained(event)
         }
-        
+
 
         switch type {
         case .keyDown:
@@ -184,13 +187,20 @@ class MorseCodeInputMethodController: IMKInputController {
         default:
             break
         }
-        
+
         return nil
     }
-    
+
+    /**
+     * Updates the typing speed based on the number typed (1-9)
+     * - Paramaters:
+     *   - keyCode: key code of number typed
+     * - Returns: void
+     */
     func handleTypingSpeedChange(_ keyCode: Int64) {
         if let speed = KeyCodeToNumber[keyCode] {
             self.typingSpeed = Int(speed)
+            NSLog("Typing speed set to \(self.typingSpeed).")
         } else {
             print("Invalid key code for typing speed adjustment.")
         }
@@ -204,7 +214,7 @@ class MorseCodeInputMethodController: IMKInputController {
         // Record the time the key was pressed
         self.keyDownTimestamp = TimeInterval(event.timestamp)
     }
-    
+
     /**
      * Handles the actual creation of dots and dashes when a valid key is released, by checking how long the key
      * was pressed down for.
@@ -215,7 +225,7 @@ class MorseCodeInputMethodController: IMKInputController {
     func handleKeyUp(_ event: CGEvent) {
         self.keyUpTimestamp = TimeInterval(event.timestamp)
         var duration: Double = 0.0
-        
+
         // Convert the time difference to seconds
         var timebaseInfo = mach_timebase_info_data_t()
         mach_timebase_info(&timebaseInfo)
@@ -235,14 +245,14 @@ class MorseCodeInputMethodController: IMKInputController {
 
         // Process the Morse code symbol
         self.processMorseSymbol(morseSymbol)
-        
+
         // Reset the timestamp
         self.keyUpTimestamp = nil
-        
+
         // Start a new timer to process the Morse code if no further input is detected within the threshold
         self.morseTimer = Timer.scheduledTimer(timeInterval: self.charThresholdSec[typingSpeed], target: self, selector: #selector(self.handleCharTimeout), userInfo: nil, repeats: false)
     }
-    
+
     /**
      * Timer callback that causes the conversion of the recently typed Morse symbols valid characters (letters, numbers, punctuation).
      * See MorseCodeDictionary.swift.
@@ -257,7 +267,7 @@ class MorseCodeInputMethodController: IMKInputController {
             self.morseTimer = Timer.scheduledTimer(timeInterval: self.wordThresholdSec[typingSpeed], target: self, selector: #selector(self.handleWordTimeout), userInfo: nil, repeats: false)
         }
     }
-    
+
     /**
      * Timer callback that adds a space to wherever typing is occuring to mark the end of a word.
      * - Returns: void
@@ -271,7 +281,7 @@ class MorseCodeInputMethodController: IMKInputController {
         // Insert space after word
         inputClient.insertText(" ", replacementRange: NSRange(location: NSNotFound, length: NSNotFound))
     }
-    
+
     /**
      * Appends the new Morse symbol to wherever typing is occuring, and updates the range of text that will need to be converted later.
      * - Parameters:
@@ -283,7 +293,7 @@ class MorseCodeInputMethodController: IMKInputController {
             NSLog("[processMorseSymbol] inputClient not valid")
             return
         }
-        
+
         // Do not play morse sound for now because it doesn't handle very fast beeps
 //        self.playMorseSound(for: symbol)
 
@@ -292,7 +302,7 @@ class MorseCodeInputMethodController: IMKInputController {
 
         // Insert Morse symbol as text
         inputClient.insertText(symbol, replacementRange: NSRange(location: NSNotFound, length: 0))
-        
+
         // Track the range of inserted Morse symbols
         if self.currentMorseRange == nil {
             let insertionPoint = inputClient.selectedRange().location
@@ -312,7 +322,7 @@ class MorseCodeInputMethodController: IMKInputController {
             NSLog("[translateMorseCode] inputClient not valid")
             return false
         }
-        
+
         let character = MorseCodeDictionary[self.currentMorseCode] ?? ""
 
         if let range = self.currentMorseRange {
@@ -322,15 +332,15 @@ class MorseCodeInputMethodController: IMKInputController {
         // Clear the current Morse code after translation
         self.currentMorseCode = ""
         self.currentMorseRange = nil
-        
+
         if (character.isEmpty) {
             self.morseTimer?.invalidate()
             return false
         }
-        
+
         return true
     }
-    
+
     /**
      * Deletes all morse symbols not yet converted
      * - Returns: void
@@ -338,61 +348,5 @@ class MorseCodeInputMethodController: IMKInputController {
     func handleBackspace() {
         self.currentMorseCode = ""
         self.morseTimer?.invalidate()
-    }
-    
-    func playMorseSound(for symbol: String) {
-        let beepDuration: TimeInterval
-        let frequency: Float = 1000.0  // Frequency of the beep (Hz)
-
-        // Set duration depending on whether it's a dot or dash
-        if symbol == "." {
-            beepDuration = 0.1  // Short beep for dot
-        } else {
-            beepDuration = 0.3  // Longer beep for dash
-        }
-
-        // Play the sound
-        playMorseTone(frequency: frequency, duration: beepDuration)
-    }
-    
-    func playMorseTone(frequency: Float, duration: TimeInterval) {
-        // Initialize the audio engine and player node
-        audioEngine = AVAudioEngine()
-        audioPlayerNode = AVAudioPlayerNode()
-
-        let sampleRate: Double = 44100.0
-        let frameCount = AVAudioFrameCount(sampleRate * duration)
-        
-        // Create a buffer to hold the sound wave
-        let buffer = AVAudioPCMBuffer(pcmFormat: audioPlayerNode.outputFormat(forBus: 0), frameCapacity: frameCount)!
-        buffer.frameLength = frameCount
-        
-        let channels = buffer.floatChannelData!
-        let amplitude: Float = 0.5
-        
-        // Fill the buffer with a sine wave for the specified frequency
-        for frame in 0..<Int(frameCount) {
-            let theta = Float(frame) * 2.0 * Float.pi * frequency / Float(sampleRate)
-            channels[0][frame] = sin(theta) * amplitude
-        }
-
-        // Attach and connect the player node to the engine
-        audioEngine.attach(audioPlayerNode)
-        audioEngine.connect(audioPlayerNode, to: audioEngine.mainMixerNode, format: buffer.format)
-        
-        // Start the engine and play the tone
-        do {
-            try audioEngine.start()
-            audioPlayerNode.scheduleBuffer(buffer, at: nil, options: .interrupts, completionHandler: nil)
-            audioPlayerNode.play()
-            
-            // Stop the sound after the duration
-            DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
-                self.audioPlayerNode.stop()
-                self.audioEngine.stop()
-            }
-        } catch {
-            print("Error starting audio engine: \(error)")
-        }
     }
 }
