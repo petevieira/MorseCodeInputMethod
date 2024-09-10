@@ -2,7 +2,12 @@
 macOS keyboard input method for Morse code.
 
 ## Description
-This input method provides the ability to use any non-modifier key to type Morse code as if the key were a telegraph or Morse key.
+This input method provides the ability to use any English letter key to type Morse code as if the key were a telegraph or Morse key.
+The typing speed can be changed by typing a number from 1 (slowest) to 9 (fastest).
+
+## Booby Traps
+**Layout-specific**: Currently, this input method only supports the English letters and Arabic numerals, meaning that if you have a different keyboard or layout, it won't be the same keys.
+**Application settings**: Some applications apply substitutions and autocorrections, such as replacing "--" with "—" (called __Smart Dashes__ in TextEdit). Turn these off for the best experience.
 
 ### Supported Morse Dictionary
 | Morse Code | Letter | Morse Code | Number | Morse Code | Punctuation |
