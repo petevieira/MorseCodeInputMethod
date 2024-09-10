@@ -63,7 +63,19 @@ class MorseCodeInputMethodController: IMKInputController {
         super.activateServer(sender)
         NSLog("Morse code input method activated.")
     }
-
+    
+    override func menu() -> NSMenu! {
+        let menu = NSMenu()
+        
+        let infoMenuItem = NSMenuItem()
+        infoMenuItem.title = "Use number keys (1-9) to adjust typing speed."
+        infoMenuItem.isEnabled = false
+        
+        menu.addItem(infoMenuItem)
+        
+        return menu
+    }
+    
     override func deactivateServer(_ sender: Any!) {
         super.deactivateServer(sender)
         removeEventTap() // Ensure event tap is removed on deactivation
