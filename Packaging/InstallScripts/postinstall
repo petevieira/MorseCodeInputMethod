@@ -10,7 +10,6 @@ USER_HOME=$(dscl . -read /Users/$USER NFSHomeDirectory | awk '{print $2}')
 # Define the paths
 INPUT_METHODS_PATH="$USER_HOME/Library/Input Methods"
 APP_PATH="$INPUT_METHODS_PATH/MorseCodeInputMethod.app"
-SWIFTMODULE_PATH="$INPUT_METHODS_PATH/MorseCodeInputMethod.swiftmodule"
 error_occurred=false
 
 # Check if .app exists and remove it
@@ -19,15 +18,6 @@ if [ -d "$APP_PATH" ]; then
     echo "Changed ownership for MorseCodeInputMethod.app" >> /var/log/install.log
 else
     echo "MorseCodeInputMethod.app not found. Cannot change permissions." >> /var/log/install.log
-    error_occurred=true
-fi
-
-# Check if swiftmodule exists and remove it
-if [ -d "$SWIFTMODULE_PATH" ]; then
-    chown -R "$USER:staff" "$USER_HOME/Library/Input Methods/MorseCodeInputMethod.swiftmodule"
-    echo "Changed ownership for MorseCodeInputMethod.swiftmodule" >> /var/log/install.log
-else
-    echo "MorseCodeInputMethod.swiftmodule not found. Cannot change permissions." >> /var/log/install.log
     error_occurred=true
 fi
 

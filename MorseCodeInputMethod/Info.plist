@@ -4,10 +4,6 @@
 <dict>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-	<key>InputMethodConnectionName</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)_Connection</string>
-	<key>InputMethodServerControllerClass</key>
-	<string>$(PRODUCT_MODULE_NAME).MorseCodeInputMethodController</string>
 	<key>LSBackgroundOnly</key>
 	<true/>
 	<key>NSPrincipalClass</key>
@@ -24,5 +20,12 @@
 	<string>Morse Code</string>
 	<key>BundleIsRelocatable</key>
 	<false/>
+	<key>NSExtension</key>
+	<dict>
+		<key>NSExtensionPointIdentifier</key>
+		<string>com.apple.inputmethod</string>
+		<key>NSExtensionPrincipalClass</key>
+		<string>$(PRODUCT_MODULE_NAME).MorseCodeInputMethodController</string>
+	</dict>
 </dict>
 </plist>

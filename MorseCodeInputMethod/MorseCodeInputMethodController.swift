@@ -49,7 +49,7 @@ class MorseCodeInputMethodController: IMKInputController {
     }
 
     deinit {
-        self.removeEventTap()
+        removeEventTap()
     }
 
     /**
@@ -149,43 +149,45 @@ class MorseCodeInputMethodController: IMKInputController {
     static func handleEvent(proxy: CGEventTapProxy, type: CGEventType, event: CGEvent, refcon: UnsafeMutableRawPointer?) -> Unmanaged<CGEvent>? {
         let controller = Unmanaged<MorseCodeInputMethodController>.fromOpaque(refcon!).takeUnretainedValue()
         let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-
-        // If not a valid key code, or if it's bac
-        if (!MorseLetterKeyCodes.contains(keyCode) && !MorseNumberKeyCodes.contains(keyCode))
-            || (keyCode == self.backspace && type != .keyDown)
-        {
+        let validMorseKey = MorseLetterKeyCodes.contains(keyCode) || MorseNumberKeyCodes.contains(keyCode) || keyCode == backspace
+        
+        if (!validMorseKey) {
             return Unmanaged.passUnretained(event)
         }
-
-
-        switch type {
-        case .keyDown:
+        
+        if type == .keyDown {
             // Invalidate the existing timer if any
             controller.morseTimer?.invalidate()
-
-            // Detect if the backspace key is pressed
-            if keyCode == self.backspace {
-                controller.handleBackspace()
-                return Unmanaged.passUnretained(event)
-            } else if MorseNumberKeyCodes.contains(keyCode) {
+        }
+        
+        if MorseNumberKeyCodes.contains(keyCode) {
+            // Handle typing speed changes (1-9)
+            if type == .keyDown {
                 controller.handleTypingSpeedChange(keyCode)
                 controller.isSpeedSettingKey = true
-                return nil
-            } else {
-                controller.isSpeedSettingKey = false
+            }
+        } else if keyCode == backspace {
+            // Handle backspace
+            var handled = false
+            if type == .keyDown {
+                handled = controller.handleBackspace()
+            }
+            if (!handled) {
+                return Unmanaged.passUnretained(event)
+            }
+        } else if MorseLetterKeyCodes.contains(keyCode) {
+            // Handle Morse symbols
+            if type == .keyDown {
                 controller.handleKeyDown(event)
-                return nil
+            } else if type == .keyUp {
+                if (controller.isSpeedSettingKey) {
+                    controller.isSpeedSettingKey = false
+                } else {
+                    controller.handleKeyUp(event)
+                }
             }
-        case .keyUp:
-            if controller.isSpeedSettingKey || MorseNumberKeyCodes.contains(keyCode) {
-                controller.isSpeedSettingKey = false
-                return nil
-            } else {
-                controller.handleKeyUp(event)
-            }
-            break
-        default:
-            break
+        } else {
+            NSLog("Error. Unhandled Morse event: \(event)")
         }
 
         return nil
@@ -199,8 +201,8 @@ class MorseCodeInputMethodController: IMKInputController {
      */
     func handleTypingSpeedChange(_ keyCode: Int64) {
         if let speed = KeyCodeToNumber[keyCode] {
-            self.typingSpeed = Int(speed)
-            NSLog("Typing speed set to \(self.typingSpeed).")
+            typingSpeed = Int(speed)
+            NSLog("Typing speed set to \(typingSpeed).")
         } else {
             print("Invalid key code for typing speed adjustment.")
         }
@@ -212,7 +214,7 @@ class MorseCodeInputMethodController: IMKInputController {
      */
     func handleKeyDown(_ event: CGEvent) {
         // Record the time the key was pressed
-        self.keyDownTimestamp = TimeInterval(event.timestamp)
+        keyDownTimestamp = TimeInterval(event.timestamp)
     }
 
     /**
@@ -223,7 +225,7 @@ class MorseCodeInputMethodController: IMKInputController {
      * - Returns: void
      */
     func handleKeyUp(_ event: CGEvent) {
-        self.keyUpTimestamp = TimeInterval(event.timestamp)
+        keyUpTimestamp = TimeInterval(event.timestamp)
         var duration: Double = 0.0
 
         // Convert the time difference to seconds
@@ -231,7 +233,7 @@ class MorseCodeInputMethodController: IMKInputController {
         mach_timebase_info(&timebaseInfo)
 
         if let keyDownTime = keyDownTimestamp {
-            let timestampDifference = self.keyUpTimestamp! - keyDownTime
+            let timestampDifference = keyUpTimestamp! - keyDownTime
             let convertedDifference = Double(timestampDifference) * Double(timebaseInfo.numer)
             duration = convertedDifference / Double(timebaseInfo.denom) / 1_000_000_000
         } else {
@@ -239,18 +241,18 @@ class MorseCodeInputMethodController: IMKInputController {
         }
 
         var morseSymbol = "-"
-        if (duration < self.ditThresholdSec[typingSpeed]) {
+        if (duration < ditThresholdSec[typingSpeed]) {
             morseSymbol = "."
         }
 
         // Process the Morse code symbol
-        self.processMorseSymbol(morseSymbol)
+        processMorseSymbol(morseSymbol)
 
         // Reset the timestamp
-        self.keyUpTimestamp = nil
+        keyUpTimestamp = nil
 
         // Start a new timer to process the Morse code if no further input is detected within the threshold
-        self.morseTimer = Timer.scheduledTimer(timeInterval: self.charThresholdSec[typingSpeed], target: self, selector: #selector(self.handleCharTimeout), userInfo: nil, repeats: false)
+        morseTimer = Timer.scheduledTimer(timeInterval: charThresholdSec[typingSpeed], target: self, selector: #selector(handleCharTimeout), userInfo: nil, repeats: false)
     }
 
     /**
@@ -260,11 +262,11 @@ class MorseCodeInputMethodController: IMKInputController {
      */
     @objc func handleCharTimeout() {
         // Assume the end of a character and process the Morse code
-        let conversionOk = self.translateMorseCode()
+        let conversionOk = translateMorseCode()
 
         if (conversionOk) {
             // Start new timer to process spaces between words
-            self.morseTimer = Timer.scheduledTimer(timeInterval: self.wordThresholdSec[typingSpeed], target: self, selector: #selector(self.handleWordTimeout), userInfo: nil, repeats: false)
+            morseTimer = Timer.scheduledTimer(timeInterval: wordThresholdSec[typingSpeed], target: self, selector: #selector(handleWordTimeout), userInfo: nil, repeats: false)
         }
     }
 
@@ -273,7 +275,7 @@ class MorseCodeInputMethodController: IMKInputController {
      * - Returns: void
      */
     @objc func handleWordTimeout() {
-        guard let inputClient = self.client() else {
+        guard let inputClient = client() else {
             NSLog("[handleWordTimeout] inputClient not valid")
             return
         }
@@ -289,26 +291,23 @@ class MorseCodeInputMethodController: IMKInputController {
      * - Returns: void
      */
     func processMorseSymbol(_ symbol: String) {
-        guard let inputClient = self.client() else {
+        guard let inputClient = client() else {
             NSLog("[processMorseSymbol] inputClient not valid")
             return
         }
 
-        // Do not play morse sound for now because it doesn't handle very fast beeps
-//        self.playMorseSound(for: symbol)
-
         // Append the Morse symbol to the current Morse code
-        self.currentMorseCode.append(symbol)
+        currentMorseCode.append(symbol)
 
         // Insert Morse symbol as text
         inputClient.insertText(symbol, replacementRange: NSRange(location: NSNotFound, length: 0))
 
         // Track the range of inserted Morse symbols
-        if self.currentMorseRange == nil {
+        if currentMorseRange == nil {
             let insertionPoint = inputClient.selectedRange().location
-            self.currentMorseRange = NSRange(location: insertionPoint - 1, length: 1)
+            currentMorseRange = NSRange(location: insertionPoint - 1, length: 1)
         } else {
-            self.currentMorseRange?.length += 1
+            currentMorseRange?.length += 1
         }
     }
 
@@ -318,23 +317,27 @@ class MorseCodeInputMethodController: IMKInputController {
      */
     func translateMorseCode() -> Bool {
         // Translate the current Morse code into a character
-        guard let inputClient = self.client() else {
+        guard let inputClient = client() else {
             NSLog("[translateMorseCode] inputClient not valid")
             return false
         }
 
-        let character = MorseCodeDictionary[self.currentMorseCode] ?? ""
+        let character = MorseCodeDictionary[currentMorseCode] ?? ""
 
-        if let range = self.currentMorseRange {
-            inputClient.insertText(character, replacementRange: range)
+        if let range = currentMorseRange {
+            if !character.isEmpty {
+                inputClient.insertText(character, replacementRange: range)
+            } else {
+                inputClient.setMarkedText("", selectionRange: range, replacementRange: range)
+            }
         }
 
         // Clear the current Morse code after translation
-        self.currentMorseCode = ""
-        self.currentMorseRange = nil
+        currentMorseCode = ""
+        currentMorseRange = nil
 
         if (character.isEmpty) {
-            self.morseTimer?.invalidate()
+            morseTimer?.invalidate()
             return false
         }
 
@@ -345,8 +348,28 @@ class MorseCodeInputMethodController: IMKInputController {
      * Deletes all morse symbols not yet converted
      * - Returns: void
      */
-    func handleBackspace() {
-        self.currentMorseCode = ""
-        self.morseTimer?.invalidate()
+    func handleBackspace() -> Bool {
+        NSLog("Backspace. Morse range: \(String(describing: currentMorseRange))")
+        guard let inputClient = client() else {
+            // No valid input client
+            NSLog("[handleBackspace] No valid input client.")
+            return false
+        }
+
+        if !currentMorseCode.isEmpty, let morseRange = currentMorseRange {
+            // Delete the range of unconverted Morse symbols.
+            inputClient.setMarkedText("", selectionRange: morseRange, replacementRange: morseRange)
+            
+            // Clear the current Morse code and reset the range.
+            currentMorseCode = ""
+            currentMorseRange = nil
+
+            NSLog("[handleBackspace] Deleted all unconverted Morse symbols.")
+            return true
+        } else {
+            NSLog("[handleBackspace] No Morse code to delete.")
+            return false
+        }
     }
 }
+    
