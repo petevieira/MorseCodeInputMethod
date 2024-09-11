@@ -2,7 +2,20 @@
 macOS keyboard input method for Morse code.
 
 ## Description
-This input method provides the ability to use any non-modifier key to type Morse code as if the key were a telegraph or Morse key.
+
+### Overview
+This input method provides the ability to use any English letter key to type Morse code as if the key were a telegraph or Morse key.
+
+### Typing Speed
+The typing speed can be changed by typing a number from 1 (slowest) to 9 (fastest). The faster the speed the quicker you have to type to produce dots and to avoid early conversions.
+
+## Booby Traps
+
+**Layout-specific**:
+Currently, this input method only supports the English letters and Arabic numerals, meaning that if you have a different keyboard or layout, it won't be the same keys.
+
+**Application settings**:
+Some applications apply substitutions and autocorrections, such as replacing "--" with "—" (called __Smart Dashes__ in TextEdit). Turn these off for the best experience.
 
 ### Supported Morse Dictionary
 | Morse Code | Letter | Morse Code | Number | Morse Code | Punctuation |
@@ -58,9 +71,18 @@ This input method provides the ability to use any non-modifier key to type Morse
 | LICENSE | Licensing information for this software. |
 | README.md | This documentation file, used to learn more about the software. |
 
-## Installation
+## Manual Installation from Release zip file
 
-1. Go to 
+1. Download a release zip file.
+2. Uncompress the zip file by double-clicking on it.
+3. Copy the `MorseCodeInputMethod.app` and `MorseCodeInputMethod.swiftmodule` to `~/Library/Input Methods`
+  - In the finder:
+    - Open your home folder and press `Cmd`+`Shift`+`.` to show hidden files and folders, like Library
+    - Select `MorseCodeInputMethod.app` and `MorseCodeInputMethod.swiftmodule` and copy them
+    - Open `Library/Input Methods` and paste them in there.
+4. Log out and log back in.
+5. Add the Morse Code input method in the keyboard settings.
+6. Have fun.
 
 ## Manual Buidling & Installation
 
